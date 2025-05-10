@@ -31,7 +31,7 @@ spec:
   selector:
     app: boardgame
   ports:
-    - protocol: "TCP"
+    - targetPort: 8080 
       port: 8080 # The port that the service is running on in the cluster
-      targetPort: 8080 # The port exposed by the service
-  type: LoadBalancer # type of the service.
+      nodePort: 30080 # The port exposed by the service
+  type: NodePort # type of the service.
