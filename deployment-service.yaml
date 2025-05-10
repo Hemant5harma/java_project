@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: boardgame
-          image: hemanthub/devproject:latest # Image that will be used to containers in the cluster
+          image: jacksneel/devproject:latest # Image that will be used to containers in the cluster
           imagePullPolicy: Always
           ports:
             - containerPort: 8080 # The port that the container is running on in the cluster
@@ -30,9 +30,8 @@ metadata: # Metadata of the resource kind we are creating
 spec:
   selector:
     app: boardgame
-  type: NodePort # type of the service.
   ports:
-    - targetPort: 8080 
+    - protocol: "TCP"
       port: 8080 # The port that the service is running on in the cluster
-      nodePort: 30080 # The port exposed by the service
-   
+      targetPort: 8080 # The port exposed by the service
+  type: LoadBalancer # type of the service.
