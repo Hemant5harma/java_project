@@ -21,9 +21,6 @@ jobs:
     - name: Build with Maven
       run: mvn clean package
 
-    - name: Stage JAR for deployment
-      run: cp target/database_service_project-0.0.2.jar .
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -42,20 +39,10 @@ jobs:
         echo "$(pwd)/ebcli-venv/bin" >> $GITHUB_PATH
 
     - name: Initialize Elastic Beanstalk
-      run: eb init -p corretto-21 java-beanstalk-1 --region ap-south-1
+      run: eb init -p corretto-21 beanstalk-java --region ap-south-1
 
     - name: Select or create EB environment
-      run: |
-        if eb status java-pro-env-1 > /dev/null 2>&1; then
-          echo "Environment exists, using it..."
-          eb use java-pro-env-1
-        else
-          echo "Environment does not exist, creating it..."
-          eb create java-pro-env-1
-        fi
-
-    - name: Deploy to Elastic Beanstalk
-      run: eb deploy --staged
+      run: eb create java-env-new
 
 
 
