@@ -33,6 +33,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
+      - name: Create S3 bucket if not exists
+        run: |
+          if ! aws s3 ls "s3://my-elastic-bucket1" 2>&1 | grep -q 'NoSuchBucket'; then
+            echo "Bucket exists."
+          else
+            aws s3 mb s3://my-elastic-bucket1 --region ap-south-1
+          fi
+
       - name: Upload to S3
         run: aws s3 cp source.zip s3://my-elastic-bucket1/source.zip
 
