@@ -6,7 +6,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -18,22 +17,18 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+
     - name: Build with Maven
       run: mvn clean package
-
-    - uses: actions/upload-artifact@v4
-      with:
-        name: Boardgame 
-        path: target/*.jar
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1
 
-    - name: install eb cli
+    - name: Install EB CLI
       run: |
         sudo apt-get update
         sudo apt-get install -y python3-pip python3-venv
@@ -43,11 +38,12 @@ jobs:
         pip install awsebcli
         echo "$(pwd)/ebcli-venv/bin" >> $GITHUB_PATH
 
-    - name: init eb
+    - name: Initialize Elastic Beanstalk
       run: eb init -p corretto-21 java-beanstalk-1 --region ap-south-1
 
-    - name: create env
-      run: eb create java-pro-env-1
+    - name: Create Environment (if needed)
+      run: |
+        eb create java-pro-env-1 || echo "Environment already exists"
 
     - name: Deploy to Elastic Beanstalk
       run: eb deploy
