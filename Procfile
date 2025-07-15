@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT -jar database_service_project-0.0.2.jar
+web: java -jar app.jar
