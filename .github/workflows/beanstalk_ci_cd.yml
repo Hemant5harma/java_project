@@ -1,52 +1,74 @@
-name: CICD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "aws_beanstalk" ]
+    branches: ["aws_beanstalk"]
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
 
-    - name: Build with Maven
-      run: mvn clean package
+      - name: Build with Maven
+        run: mvn clean package
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
+      - name: Prepare deployment package
+        run: |
+          # Adjust JAR name to match your project
+          cp target/database_service_project-0.0.2.jar app.jar
+          echo 'web: java -jar app.jar' > Procfile
+          zip deploy.zip app.jar Procfile
 
-    - name: Install EB CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y python3-pip python3-venv
-        python3 -m venv ebcli-venv
-        source ebcli-venv/bin/activate
-        pip install --upgrade pip
-        pip install awsebcli
-        echo "$(pwd)/ebcli-venv/bin" >> $GITHUB_PATH
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: my-java
+          environment_name: my-java-env
+          region: ap-south-1
+          version_label: ${{ github.run_number }}-dbsvc-0.0.2
+          deployment_package: deploy.zip
+          wait_for_deployment: true
 
-    - name: Initialize Elastic Beanstalk
-      run: eb init -p corretto-21 java-beanstalk-1 --region ap-south-1
 
-    - name: Create Environment (if needed)
-      run: |
-        eb create java-pro-env-1 || echo "Environment already exists"
 
-    - name: Deploy to Elastic Beanstalk
-      run: eb deploy
+    # - name: Configure AWS credentials
+    #   uses: aws-actions/configure-aws-credentials@v4
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ap-south-1
+
+    # - name: Install EB CLI
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y python3-pip python3-venv
+    #     python3 -m venv ebcli-venv
+    #     source ebcli-venv/bin/activate
+    #     pip install --upgrade pip
+    #     pip install awsebcli
+    #     echo "$(pwd)/ebcli-venv/bin" >> $GITHUB_PATH
+
+    # - name: Initialize Elastic Beanstalk
+    #   run: eb init -p corretto-21 java-beanstalk-1 --region ap-south-1
+
+    # - name: Create Environment (if needed)
+    #   run: |
+    #     eb create java-pro-env-1 || echo "Environment already exists"
+
+    # - name: Deploy to Elastic Beanstalk
+    #   run: eb deploy
 
 
 
