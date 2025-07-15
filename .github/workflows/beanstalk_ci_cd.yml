@@ -40,6 +40,8 @@ jobs:
           version_label: ${{ github.run_number }}-dbsvc-0.0.2
           deployment_package: deploy.zip
           wait_for_deployment: true
+          auto_create_application: true
+          
 
 
 
