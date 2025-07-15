@@ -35,6 +35,9 @@ jobs:
     - name: create env
       run: eb create java-env
 
+    - name: Deploy to Elastic Beanstalk
+      run: eb deploy
+
 
 
 
