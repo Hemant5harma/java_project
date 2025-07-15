@@ -22,10 +22,10 @@ jobs:
     - name: install eb cli
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-pip
-        git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
-        python ./aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
-        python .\aws-elastic-beanstalk-cli-setup\scripts\ebcli_installer.py
+        sudo apt-get install -y python3-pip 
+        sudo pip install awsebcli
+    # git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
+    # python ./aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
 
     - name: init eb
       run: eb init -p corretto java-pro_aws --region ap-south-1
