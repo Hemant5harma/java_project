@@ -18,12 +18,21 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
-    
+
+    - name: install eb cli
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip
+        git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
+        python ./aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
+        python .\aws-elastic-beanstalk-cli-setup\scripts\ebcli_installer.py
+
     - name: init eb
       run: eb init -p corretto java-pro_aws --region ap-south-1
 
     - name: create env
       run: eb create java-env
+
    
 
     
