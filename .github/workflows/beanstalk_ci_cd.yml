@@ -53,7 +53,7 @@ jobs:
 
           aws elasticbeanstalk update-environment \
             --environment-name beanstalk-env \
-            --version
+            --version-label v-${{ github.run_number }}
 
 
 
