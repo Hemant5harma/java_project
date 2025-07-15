@@ -42,7 +42,7 @@ jobs:
           fi
 
       - name: Upload to S3
-        run: aws s3 cp source.zip s3://s3://my-govind-bucket2001/source.zip
+        run: aws s3 cp source.zip s3://my-govind-bucket2001/source.zip
 
       - name: Deploy to Elastic Beanstalk
         run: |
