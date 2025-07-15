@@ -49,11 +49,11 @@ jobs:
           aws elasticbeanstalk create-application-version \
             --application-name beanstalk \
             --version-label v-${{ github.run_number }} \
-            --source-bundle S3Bucket=my-elastic-bucket1,S3Key=source.zip
+            --source-bundle S3Bucket=my-govind-bucket2001,S3Key=source.zip
 
           aws elasticbeanstalk update-environment \
             --environment-name beanstalk-env \
-            --version-label v-${{ github.run_number }}
+            --version
 
 
 
