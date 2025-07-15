@@ -35,7 +35,7 @@ jobs:
 
       - name: Create S3 bucket if not exists
         run: |
-          if ! aws s3 ls "s3://my-elastic-bucket1" 2>&1 | grep -q 'NoSuchBucket'; then
+          if ! aws s3 ls "s3://my-elastic-bucketgovind" 2>&1 | grep -q 'NoSuchBucket'; then
             echo "Bucket exists."
           else
             aws s3 mb s3://my-elastic-bucket1 --region ap-south-1
