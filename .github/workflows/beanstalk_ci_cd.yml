@@ -39,10 +39,10 @@ jobs:
         echo "$(pwd)/ebcli-venv/bin" >> $GITHUB_PATH
 
     - name: Initialize Elastic Beanstalk
-      run: eb init -p corretto-21 beanstalk-java --region ap-south-1
+      run: eb init -p corretto-21 beanstalk-java-1 --region ap-south-1
 
     - name: Select or create EB environment
-      run: eb create java-env-new
+      run: eb create java-env-new-1
 
     - name: Copy JAR to root (optional, if your Procfile expects it in root)
       run: cp target/database_service_project-0.0.2.jar .
