@@ -5,55 +5,49 @@ on:
     branches: [ "aws_beanstalk" ]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
 
-    - name: Build with Maven
-      run: mvn clean package
+      - name: Build with Maven
+        run: mvn clean package
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
+      - name: Package JAR and Procfile
+        run: |
+          cp target/database_service_project-0.0.2.jar app.jar
+          zip source.zip app.jar Procfile
 
-    - name: Install EB CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y python3-pip python3-venv
-        python3 -m venv ebcli-venv
-        source ebcli-venv/bin/activate
-        pip install --upgrade pip
-        pip install awsebcli
-        echo "$(pwd)/ebcli-venv/bin" >> $GITHUB_PATH
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
 
-    - name: Initialize Elastic Beanstalk
-      run: eb init -p corretto-21 beanstalk-java-1 --region ap-south-1
+      - name: Upload to S3
+        run: aws s3 cp source.zip s3://my-elastic-bucket1/source.zip
 
-    - name: Select or create EB environment
-      run: eb create java-env-new-1
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name beanstalk \
+            --version-label v-${{ github.run_number }} \
+            --source-bundle S3Bucket=my-elastic-bucket1,S3Key=source.zip
 
-    - name: Copy JAR to root (optional, if your Procfile expects it in root)
-      run: cp target/database_service_project-0.0.2.jar .
+          aws elasticbeanstalk update-environment \
+            --environment-name beanstalk-env \
+            --version-label v-${{ github.run_number }}
 
-    - name: Prepare deployment bundle
-      run: zip deploy.zip database_service_project-0.0.2.jar Procfile
 
-    - name: Deploy to Elastic Beanstalk
-      run: |
-        source ebcli-venv/bin/activate
-        eb deploy --staged --label "ci-$(date +%s)"
 
 
 
