@@ -44,10 +44,10 @@ jobs:
         echo "$(pwd)/ebcli-venv/bin" >> $GITHUB_PATH
 
     - name: init eb
-      run: eb init -p corretto java-beanstalk --region ap-south-1
+      run: eb init -p corretto-21 java-beanstalk-1 --region ap-south-1
 
     - name: create env
-      run: eb create java-pro-env
+      run: eb create java-pro-env-1
 
     - name: Deploy to Elastic Beanstalk
       run: eb deploy
