@@ -44,6 +44,17 @@ jobs:
     - name: Select or create EB environment
       run: eb create java-env-new
 
+    - name: Copy JAR to root (optional, if your Procfile expects it in root)
+      run: cp target/database_service_project-0.0.2.jar .
+
+    - name: Prepare deployment bundle
+      run: zip deploy.zip database_service_project-0.0.2.jar Procfile
+
+    - name: Deploy to Elastic Beanstalk
+      run: |
+        source ebcli-venv/bin/activate
+        eb deploy --staged --label "ci-$(date +%s)"
+
 
 
 
