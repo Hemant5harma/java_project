@@ -1,0 +1,1 @@
+build: mvn -Dmaven.repo.local=repository clean compile package
