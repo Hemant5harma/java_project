@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'maven' 
+        maven 'maven'
     }
 
     stages {
@@ -11,10 +11,10 @@ pipeline {
                 git branch: 'eks-application-3', url: 'https://github.com/Hemant5harma/java_project.git'
             }
         }
-        
+
         stage('Build Maven Project') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn clean package'
             }
         }
 
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 sh 'kubectl apply -f k8s/deployment.yml'
                 sh 'kubectl apply -f k8s/service.yml'
-                sh 'kubectl rollout restart deployment/eks2 -n ingress-nm'
+                sh 'kubectl rollout restart deployment/eks3 -n ingress-nm'
             }
         }
     }
