@@ -11,6 +11,12 @@ pipeline {
                 git branch: 'eks-application-3', url: 'https://github.com/Hemant5harma/java_project.git'
             }
         }
+        
+        stage('Build Maven Project') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
 
         stage('Test') {
             steps {
