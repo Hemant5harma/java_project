@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eks3-service
+  namespace: ingress-nm
+spec:
+  selector:
+    app: eks3  # Make sure your Deployment pods are labeled accordingly
+  ports:
+    - protocol: TCP
+      port: 80          # Ingress points to this port
+      targetPort: 8080  # Your container listens here
+  type: ClusterIP      # Suitable for ALB ingress – no need for NodePort
